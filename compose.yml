@@ -1,0 +1,63 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: spring-mart-db
+    environment:
+      POSTGRES_DB: springmart
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spring-mart-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-mart-app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: springmart
+      DB_USER: postgres
+      DB_PASSWORD: password
+      JWT_SECRET: springmart-secret-key-for-jwt-token-generation-change-in-production
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+    restart: unless-stopped
+    networks:
+      - spring-mart-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: spring-mart-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - spring-mart-network
+
+volumes:
+  postgres_data:
+
+networks:
+  spring-mart-network:
+    driver: bridge
+

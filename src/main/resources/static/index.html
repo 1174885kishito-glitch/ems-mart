@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Mart バックオフィス API テスト</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #555;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #666;
+            font-weight: bold;
+        }
+        .token-display {
+            word-break: break-all;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Spring Mart バックオフィス API テスト</h1>
+        
+        <div class="section">
+            <h2>1. ログイン（JWTトークン取得）</h2>
+            <label>ユーザー名:</label>
+            <input type="text" id="username" value="admin" placeholder="admin">
+            
+            <label>パスワード:</label>
+            <input type="password" id="password" value="password123" placeholder="password123">
+            
+            <button onclick="login()">ログイン</button>
+            <div id="loginResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>2. 商品一覧取得</h2>
+            <button onclick="getProducts()">商品一覧を取得</button>
+            <div id="productsResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>3. 商品詳細取得</h2>
+            <label>商品ID:</label>
+            <input type="number" id="productId" value="1" placeholder="1">
+            <button onclick="getProduct()">商品詳細を取得</button>
+            <div id="productResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>4. 新規商品登録</h2>
+            <label>商品名:</label>
+            <input type="text" id="productName" placeholder="商品名">
+            
+            <label>説明:</label>
+            <textarea id="productDescription" rows="3" placeholder="商品説明"></textarea>
+            
+            <label>価格:</label>
+            <input type="number" id="productPrice" placeholder="3000">
+            
+            <label>初期在庫数:</label>
+            <input type="number" id="initialStock" value="100" placeholder="100">
+            
+            <button onclick="createProduct()">商品を登録</button>
+            <div id="createProductResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>5. 注文作成</h2>
+            <label>注文内容（JSON形式）:</label>
+            <textarea id="orderItems" rows="5" placeholder='{"items":[{"productId":1,"quantity":1}]}'>{"items":[{"productId":1,"quantity":1}]}</textarea>
+            <button onclick="createOrder()">注文を作成</button>
+            <div id="orderResult" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let token = '';
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userName: username, password: password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    token = data.token;
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✓ ログイン成功！\nトークン: ' + token.substring(0, 50) + '...';
+                    resultDiv.style.display = 'block';
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '✗ ログイン失敗\n' + JSON.stringify(data, null, 2);
+                    resultDiv.style.display = 'block';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ エラー: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function getProducts() {
+            if (!token) {
+                alert('まずログインしてください');
+                return;
+            }
+
+            const resultDiv = document.getElementById('productsResult');
+            
+            try {
+                const response = await fetch('/api/products', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✓ 商品一覧取得成功\n\n' + JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ エラー: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function getProduct() {
+            if (!token) {
+                alert('まずログインしてください');
+                return;
+            }
+
+            const productId = document.getElementById('productId').value;
+            const resultDiv = document.getElementById('productResult');
+            
+            try {
+                const response = await fetch(`/api/products/${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✓ 商品詳細取得成功\n\n' + JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ エラー: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function createProduct() {
+            if (!token) {
+                alert('まずログインしてください');
+                return;
+            }
+
+            const name = document.getElementById('productName').value;
+            const description = document.getElementById('productDescription').value;
+            const price = parseInt(document.getElementById('productPrice').value);
+            const initialStock = parseInt(document.getElementById('initialStock').value);
+            const resultDiv = document.getElementById('createProductResult');
+            
+            try {
+                const response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        description: description,
+                        price: price,
+                        initialStock: initialStock
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✓ 商品登録成功\n\n' + JSON.stringify(data, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '✗ 商品登録失敗\n\n' + JSON.stringify(data, null, 2);
+                }
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ エラー: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function createOrder() {
+            if (!token) {
+                alert('まずログインしてください');
+                return;
+            }
+
+            const orderItems = document.getElementById('orderItems').value;
+            const resultDiv = document.getElementById('orderResult');
+            
+            try {
+                const orderData = JSON.parse(orderItems);
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✓ 注文作成成功\n\n' + JSON.stringify(data, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '✗ 注文作成失敗\n\n' + JSON.stringify(data, null, 2);
+                }
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '✗ エラー: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
+
