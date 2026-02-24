@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getProducts, createProduct } from '../../api/products';
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../../api/products';
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -43,8 +43,7 @@ const ProductManagement = () => {
       };
 
       if (editingProduct) {
-        setError('商品更新機能は現在未実装です。バックエンドの実装が必要です');
-        return;
+        await updateProduct(editingProduct.id, productData);
       } else {
         await createProduct(productData);
       }
@@ -67,13 +66,15 @@ const ProductManagement = () => {
       initialStock: ''
     });
     setShowModal(true);
+    setError(''); // クリアする
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('この商品を削除しますか？')) return;
 
     try {
-      setError('商品削除機能は現在未実装です。バックエンドの実装が必要です');
+      await deleteProduct(id);
+      loadProducts();
     } catch (err) {
       setError('商品の削除に失敗しました');
     }

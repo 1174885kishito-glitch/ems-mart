@@ -34,6 +34,7 @@ public class ProductService {
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public ProductResponse createProduct(ProductRequest request) {
 
         Product product = new Product();
@@ -51,12 +52,27 @@ public class ProductService {
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
-        throw new UnsupportedOperationException("商品更新機能はまだ実装されていません");
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + id));
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+
+        product = productRepository.save(product);
+        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void deleteProduct(Long id) {
-        throw new UnsupportedOperationException("商品削除機能はまだ実装されていません");
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + id));
+
+        // 在庫を先に削除
+        inventoryRepository.findById(id).ifPresent(inventoryRepository::delete);
+
+        productRepository.delete(product);
     }
 }
-
