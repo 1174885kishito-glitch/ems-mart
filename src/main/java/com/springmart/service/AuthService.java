@@ -10,27 +10,35 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
     }
-    
+
     public LoginResponse login(LoginRequest request) {
+        System.out.println("Login attempt for user: " + request.getUserName());
         User user = userRepository.findByUserName(request.getUserName())
-                .orElseThrow(() -> new RuntimeException("ユーザー名またはパスワードが正しくありません"));
-        
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                .orElseThrow(() -> {
+                    System.out.println("User not found: " + request.getUserName());
+                    return new RuntimeException("ユーザー名またはパスワードが正しくありません");
+                });
+
+        boolean matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        System.out.println("Password match result: " + matches);
+
+        if (!matches) {
             throw new RuntimeException("ユーザー名またはパスワードが正しくありません");
         }
-        
+
+        System.out.println("Generating token for user: " + user.getUserName());
         String token = jwtTokenProvider.generateToken(user.getUserName(), user.getRole());
         return new LoginResponse(token);
     }
 }
-
