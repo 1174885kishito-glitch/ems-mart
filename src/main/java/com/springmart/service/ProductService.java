@@ -7,6 +7,7 @@ import com.springmart.entity.Product;
 import com.springmart.repository.InventoryRepository;
 import com.springmart.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class ProductService {
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
     }
 
+    @Transactional
     public ProductResponse createProduct(ProductRequest request) {
 
         Product product = new Product();
@@ -45,7 +47,11 @@ public class ProductService {
         // 在庫テーブルに初期在庫数を登録
         Inventory inventory = new Inventory();
         inventory.setProduct(product);
-        inventory.setStockQuantity(request.getInitialStock());
+
+        // nullチェックを行い、指定がない場合は0を設定
+        Integer initialStock = request.getInitialStock();
+        inventory.setStockQuantity(initialStock != null ? initialStock : 0);
+
         inventoryRepository.save(inventory);
 
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
@@ -59,4 +65,3 @@ public class ProductService {
         throw new UnsupportedOperationException("商品削除機能はまだ実装されていません");
     }
 }
-
