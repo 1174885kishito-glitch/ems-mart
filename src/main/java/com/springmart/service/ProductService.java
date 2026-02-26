@@ -35,10 +35,7 @@ public class ProductService {
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
     }
 
-
     @Transactional
-    @org.springframework.transaction.annotation.Transactional
-
     public ProductResponse createProduct(ProductRequest request) {
 
         Product product = new Product();
