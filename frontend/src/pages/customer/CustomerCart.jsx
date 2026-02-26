@@ -108,7 +108,7 @@ const CustomerCart = ({ onCartUpdate }) => {
     }
   };
 
-  if (cart.length === 0) {
+  if (cart.length === 0 && !success) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
@@ -171,9 +171,8 @@ const CustomerCart = ({ onCartUpdate }) => {
             {cart.map((item, index) => (
               <div
                 key={item.productId}
-                className={`p-6 transition-all duration-300 ${
-                  animatingItems.has(item.productId) ? 'bg-blue-50 scale-105' : ''
-                } ${index !== cart.length - 1 ? 'border-b border-gray-100' : ''}`}
+                className={`p-6 transition-all duration-300 ${animatingItems.has(item.productId) ? 'bg-blue-50 scale-105' : ''
+                  } ${index !== cart.length - 1 ? 'border-b border-gray-100' : ''}`}
               >
                 <div className="flex items-center gap-6">
                   {/* Product Image */}
