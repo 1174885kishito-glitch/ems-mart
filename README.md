@@ -38,7 +38,7 @@ docker compose up -d --build
 
 #### フロントエンド（React）
 アプリケーションが起動したら、ブラウザで以下にアクセス：
-- **フロントエンド**: `http://localhost:3000`
+- **フロントエンド**: `http://localhost:3001`
   - ログイン画面が表示されます
   - 管理者アカウント（admin/password123）でログイン → 管理画面
   - 一般ユーザーアカウント（user1/password123）でログイン → ECサイト
