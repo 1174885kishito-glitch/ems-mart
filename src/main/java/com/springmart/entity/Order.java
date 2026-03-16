@@ -15,27 +15,27 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
-    
+
     @Column(name = "status", nullable = false)
     private String status; // PENDING, COMPLETED
-    
+
     @Column(name = "ordered_at", nullable = false, updatable = false)
     private LocalDateTime orderedAt;
-    
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
-    
+
     @PrePersist
     protected void onCreate() {
         orderedAt = LocalDateTime.now();
@@ -43,5 +43,32 @@ public class Order {
             status = "COMPLETED";
         }
     }
-}
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Integer getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Integer totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}
