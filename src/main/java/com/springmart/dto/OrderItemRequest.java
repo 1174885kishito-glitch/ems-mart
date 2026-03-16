@@ -20,4 +20,12 @@ public class OrderItemRequest {
     public Integer getQuantity() {
         return quantity;
     }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }

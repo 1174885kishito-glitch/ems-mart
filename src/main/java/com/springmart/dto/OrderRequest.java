@@ -15,4 +15,8 @@ public class OrderRequest {
     public List<OrderItemRequest> getItems() {
         return items;
     }
+
+    public void setItems(List<OrderItemRequest> items) {
+        this.items = items;
+    }
 }
