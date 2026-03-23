@@ -9,6 +9,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 注文エンティティ。
+ * <p>
+ * アクセサは {@link lombok.Data} による生成と手書きが混在しています。
+ * <ul>
+ *   <li><b>手書き</b>: {@code getId}, {@code getStatus}, {@code getTotalPrice},
+ *       {@code setUser}, {@code setStatus}, {@code setTotalPrice}, {@code setOrderDetails}
+ *       — {@link com.springmart.service.OrderService} などから参照。</li>
+ *   <li><b>Lombok 生成</b>（{@code @Data}）: {@code getUser}, {@code getOrderDetails}, {@code getOrderedAt}
+ *       など — 現状コードでは直接呼び出しは少ないが、JPA の双方向関連・永続化で利用。</li>
+ * </ul>
+ * Lombok を完全に外す場合は、上記を列挙してから手書きに置き換えること。
+ */
 @Entity
 @Table(name = "orders")
 @Data

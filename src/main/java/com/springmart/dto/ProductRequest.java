@@ -3,8 +3,11 @@ package com.springmart.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
+/**
+ * 商品登録・更新 API のリクエストボディ。
+ * Jackson はデフォルトで setter 経由でフィールドに値を入れるため、setter を明示する。
+ */
 public class ProductRequest {
     @NotBlank(message = "商品名は必須です")
     private String name;
@@ -32,5 +35,21 @@ public class ProductRequest {
 
     public Integer getInitialStock() {
         return initialStock;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public void setInitialStock(Integer initialStock) {
+        this.initialStock = initialStock;
     }
 }

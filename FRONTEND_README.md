@@ -28,12 +28,18 @@ npm run dev
 
 ## アクセス方法
 
+### Docker Compose で起動した場合（推奨）
+
+ルートの [README.md](README.md) の **「Docker Compose のポート」** を参照してください（例: フロント **3001**、API **8081**）。
+
 ### フロントエンド
-- **URL**: `http://localhost:3000`
+- **Docker**: `http://localhost:3001`
+- **ローカル `npm run dev`**: `frontend/vite.config.js` に従い、既定はポート **3001**（プロキシ先は `http://localhost:8080`）
 - ログイン画面が表示されます
 
 ### バックエンドAPI（直接アクセス）
-- **URL**: `http://localhost:8080`
+- **Docker**: `http://localhost:8081`
+- **ローカル開発で Spring を 8080 で起動している場合**: `http://localhost:8080`
 - APIエンドポイントに直接アクセスできます
 
 ## ログイン
@@ -108,13 +114,13 @@ docker compose up -d --build frontend
 
 ### API接続エラー
 
-- バックエンドAPI（`http://localhost:8080`）が起動しているか確認
+- バックエンド API が起動しているか確認（Docker なら `http://localhost:8081/health`、ローカルなら `http://localhost:8080/health` など、環境に合わせる）
 - ブラウザの開発者ツールでネットワークエラーを確認
 
 ### ログインできない
 
 - ユーザー名とパスワードが正しいか確認
-- バックエンドAPIが正常に動作しているか確認（`http://localhost:8080/health`）
+- バックエンド API が正常に動作しているか確認（上記 `/health`）
 
 ## 開発
 
