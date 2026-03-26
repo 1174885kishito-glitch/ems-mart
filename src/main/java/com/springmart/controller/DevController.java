@@ -1,5 +1,6 @@
 package com.springmart.controller;
 
+import com.springmart.service.DevService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/dev")
 public class DevController {
+
+    private final DevService devService;
+
+    public DevController(DevService devService) {
+        this.devService = devService;
+    }
     
     @GetMapping("/hash-password")
     public ResponseEntity<Map<String, String>> hashPassword(@RequestParam String password) {
@@ -26,5 +33,12 @@ public class DevController {
         
         return ResponseEntity.ok(response);
     }
-}
 
+    @GetMapping("/lock-test")
+    public ResponseEntity<String> lockTest(
+            @RequestParam(defaultValue = "1") Long productId,
+            @RequestParam(defaultValue = "10000") long sleepMillis) {
+        String result = devService.testPessimisticLock(productId, sleepMillis);
+        return ResponseEntity.ok(result);
+    }
+}
