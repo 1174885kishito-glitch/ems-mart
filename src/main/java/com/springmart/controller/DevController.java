@@ -49,3 +49,11 @@ public class DevController {
     }
 }
 
+    @GetMapping("/lock-test")
+    public ResponseEntity<String> lockTest(
+            @RequestParam(defaultValue = "1") Long productId,
+            @RequestParam(defaultValue = "10000") long sleepMillis) {
+        String result = devService.testPessimisticLock(productId, sleepMillis);
+        return ResponseEntity.ok(result);
+    }
+}

@@ -26,6 +26,24 @@
 - **管理者向け管理画面**: 商品管理、注文管理
 - **顧客向けECサイト**: 商品閲覧、カート機能、注文機能
 
+## Docker Compose のポート（ホスト側）
+
+`compose.yml` で公開しているポートは次のとおりです（他プロジェクトと衝突しないよう変更している場合があります）。
+
+| サービス | ホストポート | 説明 |
+|----------|----------------|------|
+| **frontend** | **3001** | React（nginx で配信） |
+| **app**（Spring Boot） | **8081** | REST API（コンテナ内は 8080） |
+| **db**（PostgreSQL） | **5440** | DB（コンテナ内は 5432） |
+
+## 開発方針（DTO / Lombok）
+
+- **`@RequestBody` で受け取る DTO**  
+  Spring（Jackson）が JSON をフィールドに反映するには、通常 **setter** または適切なコンストラクタが必要です。  
+  **Lombok の `@Data` で getter/setter を生成する**か、**手書きで setter を揃える**かのどちらかに揃え、**getter だけのクラス**にしない。
+- **エンティティ**  
+  現状は **Lombok `@Data` + 必要な箇所のみ手書き**（`Order` など）。Lombok を外す場合は、参照箇所（サービス・コントローラ・JSON）で使うアクセサを一覧化してから置き換える。
+
 ## 起動方法
 
 ### 1. Docker Composeで起動
@@ -44,9 +62,9 @@ docker compose up -d --build
   - 一般ユーザーアカウント（user1/password123）でログイン → ECサイト
 
 #### バックエンドAPI（直接アクセス）
-- **API**: `http://localhost:8080`
-  - テスト用Webインターフェース: `http://localhost:8080/`
-  - ヘルスチェック: `http://localhost:8080/health`
+- **API**: `http://localhost:8081`
+  - テスト用Webインターフェース: `http://localhost:8081/`
+  - ヘルスチェック: `http://localhost:8081/health`
 
 #### コマンドラインで確認
 ##### Linux/Mac/WSL環境
