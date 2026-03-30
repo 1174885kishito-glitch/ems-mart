@@ -13,8 +13,12 @@ CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price INTEGER NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    version BIGINT DEFAULT 0
 );
+
+-- 既存のテーブル構造を更新するためのALTER文（既に生成済みの場合を想定）
+ALTER TABLE products ADD COLUMN IF NOT EXISTS version BIGINT DEFAULT 0;
 
 -- 在庫テーブル
 CREATE TABLE IF NOT EXISTS inventory (
