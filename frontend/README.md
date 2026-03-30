@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-開発サーバーは `http://localhost:3000` で起動します。
+開発サーバーは `vite.config.js` の設定どおり、既定で `http://localhost:3001` で起動します（`/api`・`/auth` は `http://localhost:8080` にプロキシ）。
 
 ## ビルド
 
@@ -41,7 +41,7 @@ npm run build
 docker compose up -d --build
 ```
 
-フロントエンドは `http://localhost:3000` でアクセスできます。
+フロントエンドはルートの `compose.yml` に従い、通常は `http://localhost:3001` でアクセスできます（詳細はルート [README.md](../README.md)）。
 
 ## 技術スタック
 

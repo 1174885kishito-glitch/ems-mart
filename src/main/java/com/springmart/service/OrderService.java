@@ -13,6 +13,7 @@ import com.springmart.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class OrderService {
         this.userRepository = userRepository;
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional(rollbackFor = Exception.class)
     public OrderResponse createOrder(OrderRequest request) {
         String username;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
