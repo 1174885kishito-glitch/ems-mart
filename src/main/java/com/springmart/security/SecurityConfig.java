@@ -53,7 +53,18 @@ public class SecurityConfig {
                         .requestMatchers("/", "/health").permitAll()
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/dev/**").permitAll()
-                        .anyRequest().permitAll());
+                        // 以降のAPIへのアクセスは全て認証必須（保護）
+                        .anyRequest().authenticated())
+                // JWTフィルターをSpring Securityのチェーンに正しく手動で組み込む
+                .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                // 認証エラー時（トークンなし、または無効なトークン）のエラーハンドリング
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"認証エラー\", \"message\": \"無効または期限切れのトークンです。\"}");
+                        })
+                );
 
         return http.build();
     }

@@ -47,13 +47,11 @@ public class DevController {
         Map<String, Object> result = concurrentTestService.runConcurrentOrderTest(productId, threadCount, quantity);
         return ResponseEntity.ok(result);
     }
-}
 
     @GetMapping("/lock-test")
     public ResponseEntity<String> lockTest(
             @RequestParam(defaultValue = "1") Long productId,
             @RequestParam(defaultValue = "10000") long sleepMillis) {
-        String result = devService.testPessimisticLock(productId, sleepMillis);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok("Disabled");
     }
 }
