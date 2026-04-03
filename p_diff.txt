@@ -1,0 +1,15 @@
+diff --git a/src/main/java/com/springmart/service/ProductService.java b/src/main/java/com/springmart/service/ProductService.java
+index 117264d..d12a696 100644
+--- a/src/main/java/com/springmart/service/ProductService.java
++++ b/src/main/java/com/springmart/service/ProductService.java
+@@ -35,10 +35,7 @@ public class ProductService {
+         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
+     }
+ 
+-
+     @Transactional
+-    @org.springframework.transaction.annotation.Transactional
+-
+     public ProductResponse createProduct(ProductRequest request) {
+ 
+         Product product = new Product();

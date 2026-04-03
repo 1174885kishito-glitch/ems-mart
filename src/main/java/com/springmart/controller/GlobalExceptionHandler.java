@@ -33,6 +33,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(org.springframework.dao.ConcurrencyFailureException.class)
+    public ResponseEntity<Map<String, String>> handleConcurrencyFailureException(org.springframework.dao.ConcurrencyFailureException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "同時アクセスエラー（デッドロックなど）");
+        errorResponse.put("message", "システムが混み合っているため、処理を中断しました。しばらく経ってから再度お試しください。");
+        // 409 Conflict を返す
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> errorResponse = new HashMap<>();
