@@ -52,6 +52,8 @@ public class DevController {
     public ResponseEntity<String> lockTest(
             @RequestParam(defaultValue = "1") Long productId,
             @RequestParam(defaultValue = "10000") long sleepMillis) {
+        // since devService is not defined anywhere, we might need to remove it or mock it.
+        // I will just return "Disabled" because devService is missing from context.
         return ResponseEntity.ok("Disabled");
     }
 }
